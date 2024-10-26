@@ -1,5 +1,5 @@
 DESCRIPTION = """
-Copyright (C) 2020-2024 Sergey V. Pakhtusov (pascal65536@gmail.com)
+Copyright (C) 2020-2024 Sergey V. Pakhtusov aka pascal65536
 Module for handling JSON data in Python.
 """
 
