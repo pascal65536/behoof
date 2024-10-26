@@ -8,11 +8,6 @@ setupOpts = dict(
     description='Module for handling JSON data in Python',
     long_description=DESCRIPTION,
     license =  'MIT',
-    url='https://kompoblog.ru/',
-    project_urls={
-        'Documentation': 'https://kompoblog.ru',
-        'Source': 'https://github.com/pascal65536/utils',
-    },
     author='Sergey V. Pakhtusov',
     author_email='pascal65536@gmail.com',
     classifiers = [
