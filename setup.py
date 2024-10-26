@@ -162,7 +162,7 @@ def remove_book(key, book_path, base_folder=None, projects_folder=None):
 
 
 setup(
-    version="1.0.2",
+    version="1.0.3",
     packages=find_namespace_packages(
         include=["pascal65536_utils", "pascal65536_utils.*"]
     ),
