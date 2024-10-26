@@ -19,9 +19,6 @@ setup(
     url="https://github.com/pascal65536/utils",
     python_requires=">=3.10",
     package_dir={"utilspascal65536": "utilspascal65536"},
-    packages=find_namespace_packages(
-        include=["utilspascal65536", "utilspascal65536.*"]
-    ),
 )
 
 
