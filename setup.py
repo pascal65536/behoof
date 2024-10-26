@@ -169,12 +169,7 @@ setup(
     python_requires=">=3.8",
     package_dir={"pascal65536_utils": "pascal65536_utils"},
     install_requires = [
-        'os',
-        'json'
-        'uuid'
-        'string'
-        'shutil'
-        'hashlib'
+        'requests'
     ],    
     **setupOpts,
 )
