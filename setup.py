@@ -18,7 +18,7 @@ setupOpts = dict(
     classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Development Status :: 4 - Beta",
+        "Development Status :: 2 - Beta",
         "Environment :: Other Environment",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: MIT License",
@@ -38,7 +38,7 @@ import shutil
 import hashlib
 
 
-from setuptools import setup
+from setuptools import find_namespace_packages, setup
 
 
 def load_json(folder_name, file_name):
@@ -145,9 +145,9 @@ def remove_book(key, book_path, base_folder=None, projects_folder=None):
     Переместить по разным папкам
     """
     if not base_folder:
-        base_folder = 'base'    
+        base_folder = "base"
     if not projects_folder:
-        projects_folder = 'projects'
+        projects_folder = "projects"
     path = os.path.join(base_folder, projects_folder, key)
     if not os.path.exists(path):
         os.makedirs(path)
@@ -161,4 +161,12 @@ def remove_book(key, book_path, base_folder=None, projects_folder=None):
     return dst
 
 
-setup(version="1.0.2", **setupOpts)
+setup(
+    version="1.0.2",
+    packages=find_namespace_packages(
+        include=["pascal65536_utils", "pascal65536_utils.*"]
+    ),
+    python_requires=">=3.8",
+    package_dir={"pascal65536_utils": "pascal65536_utils"},
+    **setupOpts,
+)
