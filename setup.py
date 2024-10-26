@@ -19,6 +19,7 @@ import os
 import json
 import uuid
 
+from setuptools import find_namespace_packages, setup
 
 def load_json(folder_name, file_name):
     if not os.path.exists(folder_name):
