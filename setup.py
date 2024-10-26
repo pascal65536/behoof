@@ -147,15 +147,5 @@ def remove_book(key, book_path):
 
 setup(
     version=version,
-    cmdclass={
-        'build': Build, 
-        'install': Install,
-        'deb': helpers.DebCommand, 
-        'test': helpers.TestCommand,
-        'debug': helpers.DebugCommand,
-        'mergetest': helpers.MergeTestCommand,
-        'asv_config': helpers.ASVConfigCommand,
-        'style': helpers.StyleCommand
-    },
     **setupOpts
 )
