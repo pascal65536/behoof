@@ -8,7 +8,7 @@ from setuptools import find_namespace_packages, setup, find_packages
 
 setup(
     name="utilspascal65536",
-    version="1.1.0",
+    version="1.1.1",
     packages=find_packages(),
     install_requires=[],
     author="Sergey V. Pakhtusov",
