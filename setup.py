@@ -4,7 +4,6 @@ Module for handling JSON data in Python.
 """
 
 setupOpts = dict(
-    name='pascal65536_utils',
     description='Module for handling JSON data in Python',
     long_description=DESCRIPTION,
     license =  'MIT',
