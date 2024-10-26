@@ -4,18 +4,18 @@ Module for handling JSON data in Python.
 """
 
 setupOpts = dict(
-    name='pascal65536_utils',
-    description='Module for handling JSON data in Python',
+    name="pascal65536_utils",
+    description="Module for handling JSON data in Python",
     long_description=DESCRIPTION,
-    license =  'MIT',
-    url='https://kompoblog.ru/',
+    license="MIT",
+    url="https://kompoblog.ru/",
     project_urls={
-        'Documentation': 'https://kompoblog.ru',
-        'Source': 'https://github.com/pascal65536/utils',
+        "Documentation": "https://kompoblog.ru",
+        "Source": "https://github.com/pascal65536/utils",
     },
-    author='Sergey V. Pakhtusov',
-    author_email='pascal65536@gmail.com',
-    classifiers = [
+    author="Sergey V. Pakhtusov",
+    author_email="pascal65536@gmail.com",
+    classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Development Status :: 4 - Beta",
@@ -25,7 +25,7 @@ setupOpts = dict(
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Scientific/Engineering :: JSON data",
-        "Topic :: Software Development :: handling JSON data",
+        "Topic :: Software Development :: Handling JSON data",
     ],
 )
 
@@ -33,8 +33,13 @@ setupOpts = dict(
 import os
 import json
 import uuid
+import string
+import shutil
+import hashlib
 
-from setuptools import find_namespace_packages, setup
+
+from setuptools import setup
+
 
 def load_json(folder_name, file_name):
     if not os.path.exists(folder_name):
@@ -56,14 +61,16 @@ def save_json(folder_name, file_name, save_dct):
         json.dump(save_dct, f, ensure_ascii=False, indent=4)
 
 
-def upload_file(folder_name, uploaded_file):
+def upload_file(folder_name, uploaded_file, ext_lst=None):
+    if not ext_lst:
+        ext_lst = ["jpg", "png", "gif", "jpeg", "webp"]
     uploaded_file_read = uploaded_file.read()
     filename = uploaded_file.filename
     ext = filename.split(".")[-1].lower()
-    if ext not in ["jpg", "png", "gif", "jpeg", "webp"]:
-        return 
+    if ext not in ext_lst:
+        return
 
-    secret_filename = f"{uuid.uuid4()}.{ext}"    
+    secret_filename = f"{uuid.uuid4()}.{ext}"
     folder = os.path.join(folder_name, secret_filename[:2], secret_filename[2:4])
     if not os.path.exists(folder):
         os.makedirs(folder)
@@ -72,6 +79,7 @@ def upload_file(folder_name, uploaded_file):
     with open(file_path, "wb") as f:
         f.write(uploaded_file_read)
     return file_path
+
 
 def hamming_distance(string_1, string_2):
     """
@@ -93,8 +101,8 @@ def calculate_md5(file_path):
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
-    
-    
+
+
 def cross(string_1, string_2):
     for ch in string.punctuation:
         string_1 = string_1.replace(ch, " ")
@@ -113,11 +121,12 @@ def cross(string_1, string_2):
     for word in list_1:
         if word in list_2:
             counter += 1
-            
+
     if len(list_1) + len(list_2) == 0:
         return 0
 
     return round(counter / (len(list_1) + len(list_2)), 3)
+
 
 def collect_files_lst(start_path):
     """
@@ -130,11 +139,16 @@ def collect_files_lst(start_path):
             file_path_lst.append(file_path)
     return file_path_lst
 
-def remove_book(key, book_path):
+
+def remove_book(key, book_path, base_folder=None, projects_folder=None):
     """
     Переместить по разным папкам
     """
-    path = os.path.join(ps.base_folder, "Книги", key)
+    if not base_folder:
+        base_folder = 'base'    
+    if not projects_folder:
+        projects_folder = 'projects'
+    path = os.path.join(base_folder, projects_folder, key)
     if not os.path.exists(path):
         os.makedirs(path)
 
@@ -146,7 +160,5 @@ def remove_book(key, book_path):
     shutil.move(book_path, dst)
     return dst
 
-setup(
-    version='1.0.1',
-    **setupOpts
-)
+
+setup(version="1.0.2", **setupOpts)
