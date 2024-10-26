@@ -1,6 +1,33 @@
-#.  Copyright (C) 2020-2024   Sergey V. Pakhtusov (pascal65536@gmail.com)
-#  Module for handling JSON data in Python.
-#
+DESCRIPTION = """\
+Copyright (C) 2020-2024   Sergey V. Pakhtusov (pascal65536@gmail.com)
+Module for handling JSON data in Python.
+"""
+
+setupOpts = dict(
+    name='pyqtgraph',
+    description='Scientific Graphics and GUI Library for Python',
+    long_description=DESCRIPTION,
+    license =  'MIT',
+    url='http://www.pyqtgraph.org',
+    project_urls={
+        'Documentation': 'https://pyqtgraph.readthedocs.io',
+        'Source': 'https://github.com/pyqtgraph/pyqtgraph',
+    },
+    author='Luke Campagnola',
+    author_email='luke.campagnola@gmail.com',
+    classifiers = [
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Development Status :: 4 - Beta",
+        "Environment :: Other Environment",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Scientific/Engineering :: Visualization",
+        "Topic :: Software Development :: User Interfaces",
+    ],
+)
 
 
 import os
