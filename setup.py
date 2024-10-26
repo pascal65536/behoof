@@ -7,8 +7,8 @@ Module for handling JSON data in Python.
 from setuptools import setup, find_packages
 
 setup(
-    name="pascal65536_utils",
-    version="1.0.6",
+    name="utilspascal65536",
+    version="1.0.61",
     packages=find_packages(),
     install_requires=[],
     author="Sergey V. Pakhtusov",
