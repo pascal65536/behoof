@@ -4,17 +4,17 @@ Module for handling JSON data in Python.
 """
 
 setupOpts = dict(
-    name='pyqtgraph',
-    description='Scientific Graphics and GUI Library for Python',
+    name='pascal65536_utils',
+    description='Module for handling JSON data in Python',
     long_description=DESCRIPTION,
     license =  'MIT',
-    url='http://www.pyqtgraph.org',
+    url='https://kompoblog.ru/',
     project_urls={
-        'Documentation': 'https://pyqtgraph.readthedocs.io',
-        'Source': 'https://github.com/pyqtgraph/pyqtgraph',
+        'Documentation': 'https://kompoblog.ru',
+        'Source': 'https://github.com/pascal65536/utils',
     },
-    author='Luke Campagnola',
-    author_email='luke.campagnola@gmail.com',
+    author='Sergey V. Pakhtusov',
+    author_email='pascal65536@gmail.com',
     classifiers = [
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
@@ -24,8 +24,8 @@ setupOpts = dict(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "Topic :: Scientific/Engineering :: Visualization",
-        "Topic :: Software Development :: User Interfaces",
+        "Topic :: Scientific/Engineering :: JSON data",
+        "Topic :: Software Development :: handling JSON data",
     ],
 )
 
@@ -144,3 +144,35 @@ def remove_book(key, book_path):
         dst = os.path.join(path, book_name)
     shutil.move(book_path, dst)
     return dst
+
+setup(
+    version=version,
+    cmdclass={
+        'build': Build, 
+        'install': Install,
+        'deb': helpers.DebCommand, 
+        'test': helpers.TestCommand,
+        'debug': helpers.DebugCommand,
+        'mergetest': helpers.MergeTestCommand,
+        'asv_config': helpers.ASVConfigCommand,
+        'style': helpers.StyleCommand
+    },
+    packages=find_namespace_packages(include=['pascal65536_utils', 'pascal65536_utils.*']),
+    python_requires=">=3.8",
+    package_dir={"pascal65536_utils": "pascal65536_utils"},
+    package_data={
+        'pyqtgraph.examples': ['optics/*.gz', 'relativity/presets/*.cfg'],
+        "pyqtgraph.icons": ["**/*.svg", "**/*.png"],
+        "pyqtgraph": [
+            "colors/maps/*.csv",
+            "colors/maps/*.txt",
+            "colors/maps/*.hex",
+        ],
+    },
+    install_requires = [
+        'os',
+        'uuid',
+        'json'
+    ],
+    **setupOpts
+)
