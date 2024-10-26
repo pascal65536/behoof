@@ -17,15 +17,6 @@ setupOpts = dict(
     author_email='pascal65536@gmail.com',
     classifiers = [
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
-        "Development Status :: 4 - Beta",
-        "Environment :: Other Environment",
-        "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        "Topic :: Scientific/Engineering :: JSON data",
-        "Topic :: Software Development :: handling JSON data",
     ],
 )
 
