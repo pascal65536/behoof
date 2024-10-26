@@ -157,22 +157,5 @@ setup(
         'asv_config': helpers.ASVConfigCommand,
         'style': helpers.StyleCommand
     },
-    packages=find_namespace_packages(include=['pascal65536_utils', 'pascal65536_utils.*']),
-    python_requires=">=3.8",
-    package_dir={"pascal65536_utils": "pascal65536_utils"},
-    package_data={
-        'pyqtgraph.examples': ['optics/*.gz', 'relativity/presets/*.cfg'],
-        "pyqtgraph.icons": ["**/*.svg", "**/*.png"],
-        "pyqtgraph": [
-            "colors/maps/*.csv",
-            "colors/maps/*.txt",
-            "colors/maps/*.hex",
-        ],
-    },
-    install_requires = [
-        'os',
-        'uuid',
-        'json'
-    ],
     **setupOpts
 )
