@@ -4,11 +4,11 @@ Module for handling JSON data in Python.
 """
 
 
-from setuptools import setup, find_packages
+from setuptools import find_namespace_packages, setup, find_packages
 
 setup(
     name="utilspascal65536",
-    version="1.0.61",
+    version="1.0.62",
     packages=find_packages(),
     install_requires=[],
     author="Sergey V. Pakhtusov",
@@ -17,6 +17,11 @@ setup(
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/pascal65536/utils",
+    python_requires=">=3.10",
+    package_dir={"utilspascal65536": "utilspascal65536"},
+    packages=find_namespace_packages(
+        include=["utilspascal65536", "utilspascal65536.*"]
+    ),
 )
 
 
