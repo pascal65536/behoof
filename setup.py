@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="pascal65536_utils",
-    version="1.0.5",
+    version="1.0.6",
     packages=find_packages(),
     install_requires=[],
     author="Sergey V. Pakhtusov",
