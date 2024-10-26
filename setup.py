@@ -4,13 +4,28 @@ Module for handling JSON data in Python.
 """
 
 setupOpts = dict(
+    name='pascal65536_utils',
     description='Module for handling JSON data in Python',
     long_description=DESCRIPTION,
     license =  'MIT',
+    url='https://kompoblog.ru/',
+    project_urls={
+        'Documentation': 'https://kompoblog.ru',
+        'Source': 'https://github.com/pascal65536/utils',
+    },
     author='Sergey V. Pakhtusov',
     author_email='pascal65536@gmail.com',
     classifiers = [
         "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Development Status :: 4 - Beta",
+        "Environment :: Other Environment",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Scientific/Engineering :: JSON data",
+        "Topic :: Software Development :: handling JSON data",
     ],
 )
 
@@ -132,6 +147,6 @@ def remove_book(key, book_path):
     return dst
 
 setup(
-    version=version,
+    version='1.0.1',
     **setupOpts
 )
