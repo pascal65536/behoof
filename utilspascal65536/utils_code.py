@@ -108,6 +108,13 @@ def gcd(a, b):
     return max(list(get_divisors(a) & get_divisors(b)))
 
 
+def lcm(a, b):
+    """
+    Наименьшее общее кратное (НОК) чисел.
+    """
+    return abs(a * b) // gcd(a, b)
+
+
 def name_to_hex_color(name):
     """
     Функция вычисляет "цветовой никнейм"
