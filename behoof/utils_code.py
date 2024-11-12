@@ -77,9 +77,52 @@ transliteration = {
 }
 
 
-def is_prime(num):
+def is_palindrome(x):
     """
-    Эта функция проверяет, является ли переданное число простым.
+    Checks if the given value is a palindrome.
+
+    The function checks if the given value is equal to its reverse.
+    It works with strings, lists, tuples and integers.
+
+    Parameters
+    ----------
+    x : str or list or tuple or int
+        The value to check.
+
+    Returns
+    -------
+    bool
+        True if the value is a palindrome, False otherwise.
+    """
+    if isinstance(x, str):
+        xx = x
+    elif isinstance(x, list):
+        xx = x
+    elif isinstance(x, tuple):
+        xx = list(x)
+    elif isinstance(x, int):
+        xx = str(x)
+    return xx[::-1] == xx
+
+
+def is_prime(num: int) -> bool:
+    """
+    Checks if the given number is prime.
+
+    The function works by checking divisibility of the given number
+    by all odd numbers up to the square root of the given number.
+    If the number is divisible by any of these, it is not prime.
+    Otherwise, it is prime.
+
+    Parameters
+    ----------
+    num : int
+        The number to check.
+
+    Returns
+    -------
+    bool
+        True if the number is prime, False otherwise.
     """
     if num % 2 == 0:
         return False
@@ -103,22 +146,34 @@ def get_divisors(num):
 
 def gcd(a, b):
     """
-    Наибольший общий делитель.
+    Функция находит Наибольший общий делитель (НОД).
     """
     return max(list(get_divisors(a) & get_divisors(b)))
 
 
 def lcm(a, b):
     """
-    Наименьшее общее кратное (НОК) чисел.
+    Функция находит Наименьшее общее кратное (НОК).
     """
     return abs(a * b) // gcd(a, b)
 
 
-def name_to_hex_color(name):
+def name_to_hex_color(name: str) -> str:
     """
-    Функция вычисляет "цветовой никнейм"
-    в формате шестнадцатичного цвета (HEX).
+    This function generates a hex color from a given name by summing
+    up the ordinal values of the characters in the name and converting
+    the result to a hexadecimal string. The string is then prefixed with
+    "#" and padded with zeros to a length of 6 characters.
+
+    Parameters
+    ----------
+    name : str
+        The string to generate the color from.
+
+    Returns
+    -------
+    str
+        A hex color string in the format "#XXXXXX".
     """
     check_sum = 0
     for n in name:
@@ -133,34 +188,31 @@ def name_to_hex_color(name):
     return hexadecimal
 
 
-def generate_alternating_name(length):
+def generate_alternating_name(length=5) -> str:
     """
-    Генерирует имя заданной длины, чередуя гласные и согласные буквы,
-    начиная с гласной. Имя возвращается с заглавной буквы.
+    Функция генерирует имя заданной длины, чередуя гласные
+    и согласные буквы, начиная с гласной. Имя возвращается
+    с заглавной буквы.
     """
     return "".join(
         random.choice(vowel if i % 2 == 0 else consonant) for i in range(length)
     ).capitalize()
 
 
-def generate_fake_name(length=3):
+def generate_fake_name(length=3) -> str:
     """
-    Генерирует "фейковое" имя, состоящее из заданного количества слогов,
-    где каждый слог состоит из согласной и гласной.
-    Имя возвращается с заглавной буквы.
+    Функция генерирует "фейковое" имя, состоящее из заданного
+    количества слогов, где каждый слог состоит из согласной
+    и гласной. Имя возвращается с заглавной буквы.
     """
-    name = ""
-    j = 0
-    while j < length:
-        name += random.choice(consonant)
-        name += random.choice(vowel)
-        j += 1
-    return name.capitalize()
+    return "".join(
+        f"{random.choice(consonant)}{random.choice(vowel)}" for _ in range(length)
+    ).capitalize()
 
 
 def load_json(folder_name, file_name):
     """
-    Эта функция загружает данные из JSON-файла. Если указанный каталог
+    Функция загружает данные из JSON-файла. Если указанный каталог
     не существует, она создает его. Если файл не существует,
     функция создает пустой JSON-файл. Затем она загружает
     и возвращает содержимое файла в виде словаря.
@@ -178,7 +230,7 @@ def load_json(folder_name, file_name):
 
 def save_json(folder_name, file_name, save_dct):
     """
-    Эта функция сохраняет словарь в формате JSON в указанный файл.
+    Функция сохраняет словарь в формате JSON в указанный файл.
     Если указанный каталог не существует, она создает его.
     Затем она записывает переданный словарь в файл с заданным именем.
     """
@@ -191,9 +243,11 @@ def save_json(folder_name, file_name, save_dct):
 
 def upload_file(folder_name, uploaded_file, ext_lst=None):
     """
-    Эта функция загружает файл в указанную папку, проверяет его расширение
-    и создает уникальное имя для сохранения. Если папка не существует,
-    она создается. Файл сохраняется в структуре папок на основе первых двух
+    Функция загружает файл в указанную папку,
+    проверяет его расширение
+    и создает уникальное имя для сохранения.
+    Если папка не существует, она создается.
+    Файл сохраняется в структуре папок на основе первых двух
     символов уникального имени файла.
     """
     if not ext_lst:
@@ -219,14 +273,19 @@ def hamming_distance(string_1, string_2):
     """
     distance = 0
     for i in range(min(len(string_1), len(string_2))):
-        if string_1[i] != string_2[i]:
-            distance += 1
+        if string_1[i] == string_2[i]:
+            continue
+        distance += 1
     return distance
 
 
-def cross(string_1, string_2):
+def similarity(string_1: str, string_2: str) -> float:
     """
-    Эта функция вычисляет коэффициент перекрестного сходства между двумя строками.
+    Coefficient of similarity between two strings, calculated as a ratio of common words to total number of words.
+
+    :param string_1: first string
+    :param string_2: second string
+    :return: coefficient of similarity (0 - 1)
     """
     t = str.maketrans("", "", string.punctuation)
     list_1 = {word.lower() for word in string_1.translate(t).split() if len(word) > 2}
@@ -245,59 +304,71 @@ def calculate_jaccard_similarity(str1, str2):
     """
     str1 = str1.translate(str.maketrans("", "", string.punctuation)).lower()
     str2 = str2.translate(str.maketrans("", "", string.punctuation)).lower()
-
     words1 = set(word for word in str1.split() if len(word) > 2)
     words2 = set(word for word in str2.split() if len(word) > 2)
-
     intersection = words1.intersection(words2)
     union = words1.union(words2)
-
     if not union:
         return 0.0
-
     jaccard_index = len(intersection) / len(union)
-
     return round(jaccard_index, 3)
 
 
-def collect_files_lst(start_path):
+def collect_files_lst(start_path: str) -> list:
     """
-    Обходит все папки и собирает ссылки на файлы в список
+    Collects a list of full paths to all files in the given directory and its subdirectories.
+
+    :param start_path: the directory to start searching from
+    :return: a list of full paths to all files found
     """
     file_path_lst = list()
-    for root, dirs, files in os.walk(start_path):
+    for root, _, files in os.walk(start_path):
         for file in files:
             file_path = os.path.join(root, file)
             file_path_lst.append(file_path)
     return file_path_lst
 
 
-def remove_book(key, book_path, base_folder=None, projects_folder=None):
+def moves_file(file_path: str, dst: str, category: str, folder_lst=list()) -> str:
     """
-    Переместить по разным папкам
+    Moves a file to a specified destination directory with a given category name.
+
+    The given category name will be used as the last folder in the destination path.
+    If the given category name already exists in the destination directory, the file
+    will be moved to a subfolder of the category with the same name, but with a number
+    appended to the end (starting from 1).
+
+    :param file_path: the full path to the file to move
+    :param dst: the destination directory
+    :param category: the category name to use for the last folder in the destination path
+    :param folder_lst: a list of folder names to use before the category name
+    :return: the full path to the moved file
     """
-    if not base_folder:
-        base_folder = "base"
-    if not projects_folder:
-        projects_folder = "projects"
-    path = os.path.join(base_folder, projects_folder, key)
+    path = os.path.join(dst, *folder_lst, category)
     if not os.path.exists(path):
         os.makedirs(path)
-
-    book_name = book_path.split("/")[-1]
-    dst = os.path.join(path, book_name)
+    file_name = file_path.split("/")[-1]
+    dst = os.path.join(path, file_name)
     while os.path.exists(dst):
-        book_name = book_name.replace(".", "1.")
-        dst = os.path.join(path, book_name)
-    shutil.move(book_path, dst)
+        file_name = file_name.replace(".", "1.")
+        dst = os.path.join(path, file_name)
+    shutil.move(file_path, dst)
     return dst
 
 
 def generate_random_code_string():
     """
-    Эта функция генерирует случайную строку, состоящую из букв латинского алфавита
-    (как заглавных, так и строчных) и цифр. Она перемешивает символы и объединяет
-    их в одну строку.
+    Generates a random string of alphanumeric characters.
+
+    This function shuffles the string containing all upper and lower case
+    letters of the alphabet and all digits, and then joins them together into
+    a single string. The length of the string is equal to the number of all
+    possible alphanumeric characters.
+
+    Returns
+    -------
+    string
+        A random alphanumeric string.
     """
     sad = list(string.ascii_letters + string.digits)
     random.shuffle(sad)
@@ -306,9 +377,21 @@ def generate_random_code_string():
 
 def logglog_message_to_csving(name, msg1, msg2, folder_name="log"):
     """
-    Эта функция записывает сообщения в лог-файл в формате CSV.
-    Она создает папку для логов (если она не существует), формирует имя файла
-    на основе имени и добавляет в файл текущую дату и время, msg1 и msg2.
+    Logs messages to a CSV file with a timestamp.
+
+    This function appends a new line to a CSV file in the specified folder,
+    containing the current timestamp and the provided messages.
+
+    Parameters
+    ----------
+    name : str
+        The base name of the CSV file (without extension).
+    msg1 : str
+        The first message to log.
+    msg2 : str
+        The second message to log.
+    folder_name : str, optional
+        The name of the folder where the CSV file is stored (default is "log").
     """
     if not os.path.exists(folder_name):
         os.mkdir(folder_name)
@@ -324,7 +407,10 @@ def logglog_message_to_csving(name, msg1, msg2, folder_name="log"):
 
 def calculate_md5(file_path):
     """
-    Вычисляет MD5-хеш для файла
+    This function calculates the MD5 hash of the given file.
+    It reads the file in 4KB chunks and updates the MD5 hash
+    with each chunk. This way it can handle large files without
+    loading the whole file into memory.
     """
     hash_md5 = hashlib.md5()
     with open(file_path, "rb") as f:
@@ -335,12 +421,22 @@ def calculate_md5(file_path):
 
 def find_duplicate_files(folder):
     """
-    Эта функция ищет дубликаты файлов в указанной папке.
+    Finds duplicate files in the given folder.
+
+    This function walks through the given folder and its subfolders, and
+    calculates the MD5 hash of each file. It then checks if a file with the
+    same hash already exists in the dictionary. If it does, it adds the file
+    path to the list of duplicates. If not, it adds the file path to the
+    dictionary with the hash as the key. Finally, it returns the list of
+    duplicates.
+
+    :param folder: the folder to search for duplicates in
+    :return: a list of tuples, where each tuple contains two file paths that
+             are duplicates of each other
     """
     files_dict = {}
     duplicates = []
-    print(len(files_dict))
-    for root, dirs, files in os.walk(folder):
+    for root, _, files in os.walk(folder):
         for file in files:
             file_path = os.path.join(root, file)
             file_hash = calculate_md5(file_path)
@@ -351,55 +447,70 @@ def find_duplicate_files(folder):
     return duplicates
 
 
-def delete_duplicate_files(duplicates):
+def delete_files(filelist):
     """
-    Эта функция удаляет дубликаты файлов, переданные ей в виде списка.
+    Deletes all files in the given list.
+
+    :param filelist: a list of file paths to delete
     """
-    ld = len(duplicates)
-    for duplicate in duplicates:
-        os.remove(duplicate[0])
-        print(f"Removed duplicate file: {duplicate[0]}")
-    print(ld)
+    ld = len(filelist)
+    for filename in filelist:
+        os.remove(filename)
 
 
 def remove_empty_directories(root_folder):
     """
-    Эта функция рекурсивно удаляет пустые папки в указанной корневой папке.
+    Recursively removes empty directories from the given root folder.
+
+    :param root_folder: path to the root folder to start from
+    :return: None
     """
     for folder_name in os.listdir(root_folder):
         folder_path = os.path.join(root_folder, folder_name)
-        if os.path.isdir(folder_path):
-            remove_empty_directories(folder_path)
-            if not os.listdir(folder_path):
-                print(f"Удаляется пустая папка: {folder_path}")
-                os.rmdir(folder_path)
+        if not os.path.isdir(folder_path):
+            continue
+        remove_empty_directories(folder_path)
+        if os.listdir(folder_path):
+            continue
+        os.rmdir(folder_path)
 
 
 def move_file_to_folder_with_limit(file_source, folder_name, max_files_per_folder=100):
     """
-    Эта функция перемещает файл из источника в папку,
-    создавая подкаталоги по мере необходимости.
-    Она проверяет, сколько файлов уже находится в каждом подкаталоге,
-    и если количество файлов в текущем подкаталоге достигает
-    максимального значения, создаёт новый подкаталог для перемещения файла.
+    Moves the given file to a folder with the given name.
+
+    The folder will be created if it does not exist.
+    The file will be moved to a subfolder of the given folder, with a name that is
+    the next number in sequence (starting from 0). The subfolder will be created
+    if it does not exist.
+    If the number of files in the current subfolder is less than max_files_per_folder,
+    the file will be moved to that subfolder. Otherwise, a new subfolder will be created.
+
+    :param file_source: the path to the file to move
+    :param folder_name: the name of the folder to move the file to
+    :param max_files_per_folder: the maximum number of files to store in each subfolder
+    :return: None
     """
     os.makedirs(folder_name, exist_ok=True)
     maxfolder = 0
     for dirs in os.listdir(folder_name):
         local_dirs = os.path.join(folder_name, dirs)
-        if os.path.isdir(local_dirs):
-            if dirs.isdigit() and maxfolder < int(dirs):
-                maxfolder = int(dirs)
-            lendir = len(os.listdir(local_dirs))
-            if lendir < max_files_per_folder:
-                break
+        if not os.path.isdir(local_dirs):
+            continue
+        if dirs.isdigit() and maxfolder < int(dirs):
+            maxfolder = int(dirs)
+        lendir = len(os.listdir(local_dirs))
+        if lendir < max_files_per_folder:
+            break
     else:
         maxfolder += 1
         local_dirs = os.path.join(folder_name, str(maxfolder))
         os.makedirs(local_dirs, exist_ok=True)
-
     shutil.move(file_source, local_dirs)
-    print(f"Файл перемещен в {local_dirs}")
+
+
+if __name__ == "__main__":
+    pass
 
 
 # def pifagor(a, b):
