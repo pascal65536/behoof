@@ -7,6 +7,7 @@ import hashlib
 import random
 import datetime
 
+
 vowel = "aeiouy"  # гласные
 consonant = "bcdfghjklmnpqrstvwxz"  # согласные
 rus_alphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
@@ -375,7 +376,7 @@ def generate_random_code_string():
     return "".join(sad)
 
 
-def logglog_message_to_csving(name, msg1, msg2, folder_name="log"):
+def logging_to_csv(name, msg1, msg2, folder_name="log") -> None:
     """
     Logs messages to a CSV file with a timestamp.
 
@@ -405,7 +406,7 @@ def logglog_message_to_csving(name, msg1, msg2, folder_name="log"):
         f.write(";".join([f'"{x}"' for x in x_lst]) + "\n")
 
 
-def calculate_md5(file_path):
+def calculate_md5(file_path: str) -> str:
     """
     This function calculates the MD5 hash of the given file.
     It reads the file in 4KB chunks and updates the MD5 hash
@@ -419,7 +420,7 @@ def calculate_md5(file_path):
     return hash_md5.hexdigest()
 
 
-def find_duplicate_files(folder):
+def find_duplicate_files(folder: str) -> list:
     """
     Finds duplicate files in the given folder.
 
@@ -447,7 +448,7 @@ def find_duplicate_files(folder):
     return duplicates
 
 
-def delete_files(filelist):
+def delete_files(filelist: list) -> None:
     """
     Deletes all files in the given list.
 
@@ -458,7 +459,7 @@ def delete_files(filelist):
         os.remove(filename)
 
 
-def remove_empty_directories(root_folder):
+def remove_empty_directories(root_folder: str) -> None:
     """
     Recursively removes empty directories from the given root folder.
 
@@ -509,20 +510,25 @@ def move_file_to_folder_with_limit(file_source, folder_name, max_files_per_folde
     shutil.move(file_source, local_dirs)
 
 
+def euclidean_distance(a: tuple, b: tuple) -> float:
+    """
+    Calculates the Euclidean distance between two points given as tuples of two
+    numbers (e.g. (x, y)).
+
+    Parameters
+    ----------
+    a : tuple
+        The first point.
+    b : tuple
+        The second point.
+
+    Returns
+    -------
+    float
+        The Euclidean distance between the two points.
+    """
+    return ((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5
+
+
 if __name__ == "__main__":
     pass
-
-
-# def pifagor(a, b):
-#     key = tuple(sorted([a, b]))
-#     if key not in cache:
-#         cache[key] = math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
-#     return cache[key]
-
-
-# def calc_vector(a, b):
-#     ax, bx = a[0], b[0]
-#     ay, by = a[1], b[1]
-#     az, bz = a[2], b[2]
-#     cat = math.sqrt((ax - bx) ** 2 + ((ay - by) ** 2) + (az - bz) ** 2)
-#     return cat
