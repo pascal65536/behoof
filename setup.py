@@ -7,7 +7,7 @@ Module for handling JSON data in Python.
 from setuptools import find_namespace_packages, setup, find_packages
 
 setup(
-    name="utilspascal65536",
+    name="behoof",
     version="1.1.2",
     packages=find_packages(),
     install_requires=[],
@@ -16,7 +16,7 @@ setup(
     description="Module for handling JSON data in Python",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/pascal65536/utils",
+    url="https://github.com/pascal65536/behoof",
     python_requires=">=3.10",
-    package_dir={"utilspascal65536": "utilspascal65536"},
+    package_dir={"behoof": "behoof"},
 )
