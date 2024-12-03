@@ -133,16 +133,17 @@ def is_prime(num: int) -> bool:
     return True
 
 
-def get_divisors(num):
+def get_divisors(x):
     """
     Функция находит все делители заданного числа
     и возвращает их в виде множества
     """
-    ret = {1, num}
-    for i in range(2, num // 2 + 1):
-        if num % i == 0:
-            ret.add(i)
-    return ret
+    dd = set()
+    for d in range(1, int(x**0.5) + 1):
+        if x % d == 0:
+            dd.add(d)
+            dd.add(x // d)
+    return sorted(dd)
 
 
 def gcd(a, b):
