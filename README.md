@@ -23,9 +23,9 @@ This Python project to be a versatile utility library offering a wide range of f
 
 3. Data Handling and I/O:
 
-   - name_to_hex_color, load_json, save_json, upload_file - Functions for color generation, JSON file handling, and file uploading.
+   - generate_name, name_to_hex_color, load_json, save_json, upload_file - Functions for color generation, JSON file handling, and file uploading.
 
-   - logging_to_csv - Function for logging messages to a CSV file.
+   - log_action, logging_to_csv - Function for logging messages to a CSV file.
 
 4. Text Similarity and Distance:
 

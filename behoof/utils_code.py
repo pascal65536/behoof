@@ -160,6 +160,47 @@ def lcm(a, b):
     return abs(a * b) // gcd(a, b)
 
 
+def generate_name(telegram_id):
+    colors = [
+        "Красный",
+        "Синий",
+        "Зеленый",
+        "Желтый",
+        "Фиолетовый",
+        "Оранжевый",
+        "Черный",
+        "Белый",
+        "Розовый",
+        "Серый",
+    ]
+    adjectives = [
+        "Смешной",
+        "Сильный",
+        "Умный",
+        "Быстрый",
+        "Мягкий",
+        "Храбрый",
+        "Тихий",
+        "Яркий",
+        "Доброжелательный",
+        "Ласковый",
+    ]
+    animals = [
+        "Кот",
+        "Пёс",
+        "Дельфин",
+        "Заяц",
+        "Лев",
+        "Тигр",
+        "Медведь",
+        "Кролик",
+        "Леопард",
+        "Конь",
+    ]
+    telegram_str = str(telegram_id)
+    return f"{colors[int(telegram_str[-3])]} {adjectives[int(telegram_str[-2])]} {animals[int(telegram_str[-1])]}"
+
+
 def name_to_hex_color(name: str) -> str:
     """
     This function generates a hex color from a given name by summing
@@ -219,12 +260,16 @@ def load_json(folder_name, file_name):
     функция создает пустой JSON-файл. Затем она загружает
     и возвращает содержимое файла в виде словаря.
     """
+    if isinstance(folder_name_lst, str):
+        folder_name = folder_name_lst
+    elif isinstance(folder_name_lst, list):
+        folder_name = os.path.join(*folder_name_lst)
     if not os.path.exists(folder_name):
-        os.mkdir(folder_name)
+        os.makedirs(folder_name)
     filename = os.path.join(folder_name, file_name)
     if not os.path.exists(filename):
         with open(filename, "w", encoding="utf-8") as f:
-            json.dump(dict(), f, ensure_ascii=True)
+            json.dump(default, f, ensure_ascii=True)
     with open(filename, encoding="utf-8") as f:
         load_dct = json.load(f)
     return load_dct
@@ -236,11 +281,16 @@ def save_json(folder_name, file_name, save_dct):
     Если указанный каталог не существует, она создает его.
     Затем она записывает переданный словарь в файл с заданным именем.
     """
+    if isinstance(folder_name_lst, str):
+        folder_name = folder_name_lst
+    elif isinstance(folder_name_lst, list):
+        folder_name = os.path.join(*folder_name_lst)
     if not os.path.exists(folder_name):
-        os.mkdir(folder_name)
+        os.makedirs(folder_name)
     filename = os.path.join(folder_name, file_name)
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(save_dct, f, ensure_ascii=False, indent=4)
+
 
 
 def upload_file(folder_name, uploaded_file, ext_lst=None):
@@ -405,6 +455,25 @@ def logging_to_csv(name, msg1, msg2, folder_name="log") -> None:
         x_lst.append(msg1)
         x_lst.append(msg2)
         f.write(";".join([f'"{x}"' for x in x_lst]) + "\n")
+
+
+def log_action(func):
+    '''Декоратор для логирования'''
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            # Логируем входные параметры
+            logging.info(f'Calling function: {func.__name__} with args: {args[0].json} and kwargs: {kwargs}')
+            result = func(*args, **kwargs)
+            # Логируем выходное значение
+            logging.info(f'Function {func.__name__} returned: {result}')
+            return result
+        except Exception as e:
+            # Логируем исключения
+            logging.error(f'Exception in function {func.__name__}: {e}', exc_info=True)
+            raise
+    return wrapper
 
 
 def calculate_md5(file_path: str) -> str:

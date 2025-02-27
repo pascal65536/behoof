@@ -9,7 +9,7 @@ from setuptools import find_namespace_packages, setup, find_packages
 
 setup(
     name="behoof",
-    version="1.1.5",
+    version="1.1.6",
     packages=find_packages(),
     install_requires=[],
     author="Sergey V. Pakhtusov",
