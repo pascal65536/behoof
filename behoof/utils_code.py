@@ -253,7 +253,7 @@ def generate_fake_name(length=3) -> str:
     ).capitalize()
 
 
-def load_json(folder_name, file_name):
+def load_json(folder_name_lst, file_name, default={}):
     """
     Функция загружает данные из JSON-файла. Если указанный каталог
     не существует, она создает его. Если файл не существует,
@@ -275,7 +275,7 @@ def load_json(folder_name, file_name):
     return load_dct
 
 
-def save_json(folder_name, file_name, save_dct):
+def save_json(folder_name_lst, file_name, save_dct):
     """
     Функция сохраняет словарь в формате JSON в указанный файл.
     Если указанный каталог не существует, она создает его.
@@ -290,7 +290,6 @@ def save_json(folder_name, file_name, save_dct):
     filename = os.path.join(folder_name, file_name)
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(save_dct, f, ensure_ascii=False, indent=4)
-
 
 
 def upload_file(folder_name, uploaded_file, ext_lst=None):
