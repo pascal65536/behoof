@@ -489,6 +489,11 @@ def calculate_md5(file_path: str) -> str:
     return hash_md5.hexdigest()
 
 
+def str_to_md5(input_string):
+    hash_md5 = hashlib.md5(input_string.encode("utf-8"))
+    return hash_md5.hexdigest()
+
+
 def find_duplicate_files(folder: str) -> list:
     """
     Finds duplicate files in the given folder.
