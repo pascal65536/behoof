@@ -36,3 +36,13 @@ This Python project to be a versatile utility library offering a wide range of f
    - collect_files_lst, moves_file, generate_random_code_string - Functions for collecting files, moving files, and generating random code strings.
 
    - calculate_md5, find_duplicate_files, delete_files, remove_empty_directories, move_file_to_folder_with_limit - Functions specifically focused on duplicate file management, including MD5 hashing, duplicate file detection, deletion, and organization into folders with limited file counts.
+
+```
+                           _  __  ____ ____ _____  __   
+ _ __   __ _ ___  ___ __ _| |/ /_| ___| ___|___ / / /_  
+| '_ \ / _` / __|/ __/ _` | | '_ \___ \___ \ |_ \| '_ \ 
+| |_) | (_| \__ \ (_| (_| | | (_) |__) |__) |__) | (_) |
+| .__/ \__,_|___/\___\__,_|_|\___/____/____/____/ \___/ 
+|_|                                                     
+
+```
