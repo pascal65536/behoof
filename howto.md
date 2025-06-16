@@ -18,6 +18,12 @@ rm -rf build dist *.egg-info
 python3 -m build
 ```
 
+- Обновите пакет на проекте:
+
+```bash
+pip install --upgrade behoof
+```
+
 ---
 
 ## Шаг 2. Создайте API-токены для TestPyPI и PyPI
