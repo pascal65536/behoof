@@ -1,5 +1,5 @@
 DESCRIPTION = """
-Copyright (C) 2020-2024 Sergey V. Pakhtusov aka pascal65536
+Copyright (C) 2020-2025 Sergey V. Pakhtusov aka pascal65536
 
 This Python project to be a versatile utility library offering a wide range of functionalities, including.
 """

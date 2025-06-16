@@ -1,6 +1,6 @@
 Useful utilities
 
-Copyright (C) 2020-2024 Sergey V. Pakhtusov aka pascal65536
+Copyright (C) 2020-2025 Sergey V. Pakhtusov aka pascal65536
 
 A general-purpose utility library offering a wide range of functions
 
