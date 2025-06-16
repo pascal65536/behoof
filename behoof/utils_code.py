@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import uuid
 import string
@@ -6,6 +7,8 @@ import shutil
 import hashlib
 import random
 import datetime
+import binascii
+from collections import defaultdict
 
 
 vowel = "aeiouy"  # гласные
@@ -253,71 +256,6 @@ def generate_fake_name(length=3) -> str:
     ).capitalize()
 
 
-def load_json(folder_name_lst, file_name, default={}):
-    """
-    Функция загружает данные из JSON-файла. Если указанный каталог
-    не существует, она создает его. Если файл не существует,
-    функция создает пустой JSON-файл. Затем она загружает
-    и возвращает содержимое файла в виде словаря.
-    """
-    if isinstance(folder_name_lst, str):
-        folder_name = folder_name_lst
-    elif isinstance(folder_name_lst, list):
-        folder_name = os.path.join(*folder_name_lst)
-    if not os.path.exists(folder_name):
-        os.makedirs(folder_name)
-    filename = os.path.join(folder_name, file_name)
-    if not os.path.exists(filename):
-        with open(filename, "w", encoding="utf-8") as f:
-            json.dump(default, f, ensure_ascii=True)
-    with open(filename, encoding="utf-8") as f:
-        load_dct = json.load(f)
-    return load_dct
-
-
-def save_json(folder_name_lst, file_name, save_dct):
-    """
-    Функция сохраняет словарь в формате JSON в указанный файл.
-    Если указанный каталог не существует, она создает его.
-    Затем она записывает переданный словарь в файл с заданным именем.
-    """
-    if isinstance(folder_name_lst, str):
-        folder_name = folder_name_lst
-    elif isinstance(folder_name_lst, list):
-        folder_name = os.path.join(*folder_name_lst)
-    if not os.path.exists(folder_name):
-        os.makedirs(folder_name)
-    filename = os.path.join(folder_name, file_name)
-    with open(filename, "w", encoding="utf-8") as f:
-        json.dump(save_dct, f, ensure_ascii=False, indent=4)
-
-
-def upload_file(folder_name, uploaded_file, ext_lst=None):
-    """
-    Функция загружает файл в указанную папку,
-    проверяет его расширение
-    и создает уникальное имя для сохранения.
-    Если папка не существует, она создается.
-    Файл сохраняется в структуре папок на основе первых двух
-    символов уникального имени файла.
-    """
-    if not ext_lst:
-        ext_lst = ["jpg", "png", "gif", "jpeg", "webp"]
-    uploaded_file_read = uploaded_file.read()
-    filename = uploaded_file.filename
-    ext = filename.split(".")[-1].lower()
-    if ext not in ext_lst:
-        return
-    secret_filename = f"{uuid.uuid4()}.{ext}"
-    folder = os.path.join(folder_name, secret_filename[:2], secret_filename[2:4])
-    if not os.path.exists(folder):
-        os.makedirs(folder)
-    file_path = os.path.join(folder, secret_filename)
-    with open(file_path, "wb") as f:
-        f.write(uploaded_file_read)
-    return file_path
-
-
 def hamming_distance(string_1, string_2):
     """
     Расстояние Хэмминга
@@ -328,6 +266,71 @@ def hamming_distance(string_1, string_2):
             continue
         distance += 1
     return distance
+
+
+def euclidean_distance(a: tuple, b: tuple) -> float:
+    """
+    Calculates the Euclidean distance between two points given as tuples of two
+    numbers (e.g. (x, y)).
+
+    Parameters
+    ----------
+    a : tuple
+        The first point.
+    b : tuple
+        The second point.
+
+    Returns
+    -------
+    float
+        The Euclidean distance between the two points.
+    """
+    return ((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5
+
+
+def generate_random_code_string():
+    """
+    Generates a random string of alphanumeric characters.
+
+    This function shuffles the string containing all upper and lower case
+    letters of the alphabet and all digits, and then joins them together into
+    a single string. The length of the string is equal to the number of all
+    possible alphanumeric characters.
+
+    Returns
+    -------
+    string
+        A random alphanumeric string.
+    """
+    sad = list(string.ascii_letters + string.digits)
+    random.shuffle(sad)
+    return "".join(sad)
+
+
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r"[^\w\s]", "", text)
+    return text
+
+
+def generate_shingles(text, shingle_len=2):
+    words = text.split()
+    shingles = []
+    for word in words:
+        i = 0
+        while i < len(word):
+            shingle = word[i : i + shingle_len]
+            # Хэшируем шингл через CRC32 для компактного хранения
+            shingle_hash = binascii.crc32(shingle.encode("utf-8"))
+            shingles.append(shingle_hash)
+            i += shingle_len
+    shingles_dct = defaultdict(float)
+    for sh in shingles:
+        shingles_dct[sh] += 1.0
+    return shingles_dct
+
+
+# Similarity
 
 
 def similarity(string_1: str, string_2: str) -> float:
@@ -363,6 +366,100 @@ def calculate_jaccard_similarity(str1, str2):
         return 0.0
     jaccard_index = len(intersection) / len(union)
     return round(jaccard_index, 3)
+
+
+def weighted_jaccard(shingles1, shingles2):
+    """
+    Вычисляет коэффициент Жаккара
+    """
+    keys = set(shingles1.keys()).union(shingles2.keys())
+    min_sum = 0.0
+    max_sum = 0.0
+    for k in keys:
+        w1 = shingles1.get(k, 0)
+        w2 = shingles2.get(k, 0)
+        min_sum += min(w1, w2)
+        max_sum += max(w1, w2)
+    if max_sum == 0:
+        return 0.0
+    return min_sum / max_sum
+
+
+# MD5
+
+
+def calculate_md5(file_path: str) -> str:
+    """
+    This function calculates the MD5 hash of the given file.
+    It reads the file in 4KB chunks and updates the MD5 hash
+    with each chunk. This way it can handle large files without
+    loading the whole file into memory.
+    """
+    hash_md5 = hashlib.md5()
+    with open(file_path, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
+
+
+def str_to_md5(input_string):
+    hash_md5 = hashlib.md5(input_string.encode("utf-8"))
+    return hash_md5.hexdigest()
+
+
+# Files
+
+
+def logging_to_csv(name, msg1, msg2, folder_name="log") -> None:
+    """
+    Logs messages to a CSV file with a timestamp.
+
+    This function appends a new line to a CSV file in the specified folder,
+    containing the current timestamp and the provided messages.
+
+    Parameters
+    ----------
+    name : str
+        The base name of the CSV file (without extension).
+    msg1 : str
+        The first message to log.
+    msg2 : str
+        The second message to log.
+    folder_name : str, optional
+        The name of the folder where the CSV file is stored (default is "log").
+    """
+    if not os.path.exists(folder_name):
+        os.mkdir(folder_name)
+    file_name = f"{name}.csv"
+    filename = os.path.join(folder_name, file_name)
+    with open(filename, "a+", encoding="utf8", errors="replace", newline="") as f:
+        x_lst = list()
+        x_lst.append(datetime.datetime.now().isoformat())
+        x_lst.append(msg1)
+        x_lst.append(msg2)
+        f.write(";".join([f'"{x}"' for x in x_lst]) + "\n")
+
+
+def log_action(func):
+    """Декоратор для логирования"""
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            # Логируем входные параметры
+            logging.info(
+                f"Calling function: {func.__name__} with args: {args[0].json} and kwargs: {kwargs}"
+            )
+            result = func(*args, **kwargs)
+            # Логируем выходное значение
+            logging.info(f"Function {func.__name__} returned: {result}")
+            return result
+        except Exception as e:
+            # Логируем исключения
+            logging.error(f"Exception in function {func.__name__}: {e}", exc_info=True)
+            raise
+
+    return wrapper
 
 
 def collect_files_lst(start_path: str) -> list:
@@ -405,93 +502,6 @@ def moves_file(file_path: str, dst: str, category: str, folder_lst=list()) -> st
         dst = os.path.join(path, file_name)
     shutil.move(file_path, dst)
     return dst
-
-
-def generate_random_code_string():
-    """
-    Generates a random string of alphanumeric characters.
-
-    This function shuffles the string containing all upper and lower case
-    letters of the alphabet and all digits, and then joins them together into
-    a single string. The length of the string is equal to the number of all
-    possible alphanumeric characters.
-
-    Returns
-    -------
-    string
-        A random alphanumeric string.
-    """
-    sad = list(string.ascii_letters + string.digits)
-    random.shuffle(sad)
-    return "".join(sad)
-
-
-def logging_to_csv(name, msg1, msg2, folder_name="log") -> None:
-    """
-    Logs messages to a CSV file with a timestamp.
-
-    This function appends a new line to a CSV file in the specified folder,
-    containing the current timestamp and the provided messages.
-
-    Parameters
-    ----------
-    name : str
-        The base name of the CSV file (without extension).
-    msg1 : str
-        The first message to log.
-    msg2 : str
-        The second message to log.
-    folder_name : str, optional
-        The name of the folder where the CSV file is stored (default is "log").
-    """
-    if not os.path.exists(folder_name):
-        os.mkdir(folder_name)
-    file_name = f"{name}.csv"
-    filename = os.path.join(folder_name, file_name)
-    with open(filename, "a+", encoding="utf8", errors="replace", newline="") as f:
-        x_lst = list()
-        x_lst.append(datetime.datetime.now().isoformat())
-        x_lst.append(msg1)
-        x_lst.append(msg2)
-        f.write(";".join([f'"{x}"' for x in x_lst]) + "\n")
-
-
-def log_action(func):
-    '''Декоратор для логирования'''
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            # Логируем входные параметры
-            logging.info(f'Calling function: {func.__name__} with args: {args[0].json} and kwargs: {kwargs}')
-            result = func(*args, **kwargs)
-            # Логируем выходное значение
-            logging.info(f'Function {func.__name__} returned: {result}')
-            return result
-        except Exception as e:
-            # Логируем исключения
-            logging.error(f'Exception in function {func.__name__}: {e}', exc_info=True)
-            raise
-    return wrapper
-
-
-def calculate_md5(file_path: str) -> str:
-    """
-    This function calculates the MD5 hash of the given file.
-    It reads the file in 4KB chunks and updates the MD5 hash
-    with each chunk. This way it can handle large files without
-    loading the whole file into memory.
-    """
-    hash_md5 = hashlib.md5()
-    with open(file_path, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            hash_md5.update(chunk)
-    return hash_md5.hexdigest()
-
-
-def str_to_md5(input_string):
-    hash_md5 = hashlib.md5(input_string.encode("utf-8"))
-    return hash_md5.hexdigest()
 
 
 def find_duplicate_files(folder: str) -> list:
@@ -584,24 +594,69 @@ def move_file_to_folder_with_limit(file_source, folder_name, max_files_per_folde
     shutil.move(file_source, local_dirs)
 
 
-def euclidean_distance(a: tuple, b: tuple) -> float:
+def upload_file(folder_name, uploaded_file, ext_lst=None):
     """
-    Calculates the Euclidean distance between two points given as tuples of two
-    numbers (e.g. (x, y)).
-
-    Parameters
-    ----------
-    a : tuple
-        The first point.
-    b : tuple
-        The second point.
-
-    Returns
-    -------
-    float
-        The Euclidean distance between the two points.
+    Функция загружает файл в указанную папку,
+    проверяет его расширение
+    и создает уникальное имя для сохранения.
+    Если папка не существует, она создается.
+    Файл сохраняется в структуре папок на основе первых двух
+    символов уникального имени файла.
     """
-    return ((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5
+    if not ext_lst:
+        ext_lst = ["jpg", "png", "gif", "jpeg", "webp"]
+    uploaded_file_read = uploaded_file.read()
+    filename = uploaded_file.filename
+    ext = filename.split(".")[-1].lower()
+    if ext not in ext_lst:
+        return
+    secret_filename = f"{uuid.uuid4()}.{ext}"
+    folder = os.path.join(folder_name, secret_filename[:2], secret_filename[2:4])
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+    file_path = os.path.join(folder, secret_filename)
+    with open(file_path, "wb") as f:
+        f.write(uploaded_file_read)
+    return file_path
+
+
+def load_json(folder_name_lst, file_name, default={}):
+    """
+    Функция загружает данные из JSON-файла. Если указанный каталог
+    не существует, она создает его. Если файл не существует,
+    функция создает пустой JSON-файл. Затем она загружает
+    и возвращает содержимое файла в виде словаря.
+    """
+    if isinstance(folder_name_lst, str):
+        folder_name = folder_name_lst
+    elif isinstance(folder_name_lst, list):
+        folder_name = os.path.join(*folder_name_lst)
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+    filename = os.path.join(folder_name, file_name)
+    if not os.path.exists(filename):
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(default, f, ensure_ascii=True)
+    with open(filename, encoding="utf-8") as f:
+        load_dct = json.load(f)
+    return load_dct
+
+
+def save_json(folder_name_lst, file_name, save_dct):
+    """
+    Функция сохраняет словарь в формате JSON в указанный файл.
+    Если указанный каталог не существует, она создает его.
+    Затем она записывает переданный словарь в файл с заданным именем.
+    """
+    if isinstance(folder_name_lst, str):
+        folder_name = folder_name_lst
+    elif isinstance(folder_name_lst, list):
+        folder_name = os.path.join(*folder_name_lst)
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+    filename = os.path.join(folder_name, file_name)
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(save_dct, f, ensure_ascii=False, indent=4)
 
 
 if __name__ == "__main__":

@@ -7,9 +7,10 @@ This Python project to be a versatile utility library offering a wide range of f
 
 from setuptools import find_namespace_packages, setup, find_packages
 
+
 setup(
     name="behoof",
-    version="1.1.7",
+    version="1.1.8",
     packages=find_packages(),
     install_requires=[],
     author="Sergey V. Pakhtusov",
