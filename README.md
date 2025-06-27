@@ -2,10 +2,19 @@ Useful utilities
 
 Copyright (C) 2020-2025 Sergey V. Pakhtusov aka pascal65536
 
+```
+                           _  __  ____ ____ _____  __   
+ _ __   __ _ ___  ___ __ _| |/ /_| ___| ___|___ / / /_  
+| '_ \ / _` / __|/ __/ _` | | '_ \___ \___ \ |_ \| '_ \ 
+| |_) | (_| \__ \ (_| (_| | | (_) |__) |__) |__) | (_) |
+| .__/ \__,_|___/\___\__,_|_|\___/____/____/____/ \___/ 
+|_|                                                     
+
+```
+
 A general-purpose utility library offering a wide range of functions
 
-pip install git+https://github.com/pascal65536/behoof.git
-
+`pip install behoof`
 
 This Python project to be a versatile utility library offering a wide range of functionalities, including:
 
@@ -37,12 +46,8 @@ This Python project to be a versatile utility library offering a wide range of f
 
    - calculate_md5, find_duplicate_files, delete_files, remove_empty_directories, move_file_to_folder_with_limit - Functions specifically focused on duplicate file management, including MD5 hashing, duplicate file detection, deletion, and organization into folders with limited file counts.
 
-```
-                           _  __  ____ ____ _____  __   
- _ __   __ _ ___  ___ __ _| |/ /_| ___| ___|___ / / /_  
-| '_ \ / _` / __|/ __/ _` | | '_ \___ \___ \ |_ \| '_ \ 
-| |_) | (_| \__ \ (_| (_| | | (_) |__) |__) |__) | (_) |
-| .__/ \__,_|___/\___\__,_|_|\___/____/____/____/ \___/ 
-|_|                                                     
+6. Working with matrices. Matrix transformation of 2D space.
+ 
+   - rotate_ccw, rotate_cw, copy, create, flip_diagonal_main, flip_diagonal_second, flip_horizontal, flip_vertical, mirror, show
 
-```
+   - set_cx, set_sx, set_tx, base_create, get_new_coords matrix_calc
