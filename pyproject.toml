@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "behoof"
-version = "1.2.2"
+version = "1.2.3"
 description = "A general-purpose utility library offering a wide range of functions."
 readme = "README.md"
 requires-python = ">=3.10"

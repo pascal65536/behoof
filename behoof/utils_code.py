@@ -1,3 +1,8 @@
+"""
+Утилитарный модуль: работа со строками, числами, файлами, хешами,
+генерация имён, вычисление схожести текстов и т.п.
+"""
+
 import os
 import re
 import json
@@ -8,7 +13,8 @@ import hashlib
 import random
 import datetime
 import binascii
-from collections import defaultdict
+from collections import defaultdict, Counter
+from math import log2
 
 vowel = "aeiouy"  # гласные
 consonant = "bcdfghjklmnpqrstvwxz"  # согласные
@@ -82,20 +88,20 @@ transliteration = {
 
 def is_palindrome(x):
     """
-    Checks if the given value is a palindrome.
+    Проверяет, является ли значение палиндромом.
 
-    The function checks if the given value is equal to its reverse.
-    It works with strings, lists, tuples and integers.
+    Значение сравнивается со своим разворотом. Поддерживаются строки,
+    списки, кортежи и целые числа (число приводится к строке).
 
     Parameters
     ----------
     x : str or list or tuple or int
-        The value to check.
+        Проверяемое значение.
 
     Returns
     -------
     bool
-        True if the value is a palindrome, False otherwise.
+        True, если значение является палиндромом, иначе False.
     """
     if isinstance(x, str):
         xx = x
@@ -110,23 +116,25 @@ def is_palindrome(x):
 
 def is_prime(num: int) -> bool:
     """
-    Checks if the given number is prime.
+    Проверяет, является ли число простым.
 
-    The function works by checking divisibility of the given number
-    by all odd numbers up to the square root of the given number.
-    If the number is divisible by any of these, it is not prime.
-    Otherwise, it is prime.
+    Перебираются нечётные делители до sqrt(num). Числа < 2 простыми
+    не считаются; 2 — простое.
 
     Parameters
     ----------
     num : int
-        The number to check.
+        Проверяемое число.
 
     Returns
     -------
     bool
-        True if the number is prime, False otherwise.
+        True, если число простое, иначе False.
     """
+    if num < 2:
+        return False
+    if num == 2:
+        return True
     if num % 2 == 0:
         return False
     for i in range(3, int(num**0.5) + 1, 2):
@@ -137,8 +145,17 @@ def is_prime(num: int) -> bool:
 
 def get_divisors(x):
     """
-    Функция находит все делители заданного числа
-    и возвращает их в виде множества
+    Находит все делители заданного числа.
+
+    Parameters
+    ----------
+    x : int
+        Число, для которого ищутся делители.
+
+    Returns
+    -------
+    list
+        Отсортированный список всех делителей числа x.
     """
     dd = set()
     for d in range(1, int(x**0.5) + 1):
@@ -150,19 +167,61 @@ def get_divisors(x):
 
 def gcd(a, b):
     """
-    Функция находит Наибольший общий делитель (НОД).
+    Находит наибольший общий делитель (НОД) двух чисел.
+
+    Реализация через пересечение множеств делителей.
+
+    Parameters
+    ----------
+    a : int
+        Первое число.
+    b : int
+        Второе число.
+
+    Returns
+    -------
+    int
+        Наибольший общий делитель a и b.
     """
-    return max(list(get_divisors(a) & get_divisors(b)))
+    return max(list(set(get_divisors(a)) & set(get_divisors(b))))
 
 
 def lcm(a, b):
     """
-    Функция находит Наименьшее общее кратное (НОК).
+    Находит наименьшее общее кратное (НОК) двух чисел.
+
+    Parameters
+    ----------
+    a : int
+        Первое число.
+    b : int
+        Второе число.
+
+    Returns
+    -------
+    int
+        Наименьшее общее кратное a и b.
     """
     return abs(a * b) // gcd(a, b)
 
 
 def generate_name(telegram_id):
+    """
+    Генерирует псевдоним по telegram_id.
+
+    Последние три цифры идентификатора используются как индексы
+    для выбора цвета, прилагательного и животного.
+
+    Parameters
+    ----------
+    telegram_id : int or str
+        Идентификатор Telegram (как минимум 3 цифры).
+
+    Returns
+    -------
+    str
+        Строка вида "Красный Смешной Кот".
+    """
     colors = [
         "Красный",
         "Синий",
@@ -205,20 +264,20 @@ def generate_name(telegram_id):
 
 def name_to_hex_color(name: str) -> str:
     """
-    This function generates a hex color from a given name by summing
-    up the ordinal values of the characters in the name and converting
-    the result to a hexadecimal string. The string is then prefixed with
-    "#" and padded with zeros to a length of 6 characters.
+    Генерирует hex-цвет из строки.
+
+    Суммирует коды символов и переводит результат в шестнадцатеричную
+    строку, дополняя её нулями до 6 символов.
 
     Parameters
     ----------
     name : str
-        The string to generate the color from.
+        Строка, из которой генерируется цвет.
 
     Returns
     -------
     str
-        A hex color string in the format "#XXXXXX".
+        Строка вида "#XXXXXX".
     """
     check_sum = 0
     for n in name:
@@ -235,9 +294,19 @@ def name_to_hex_color(name: str) -> str:
 
 def generate_alternating_name(length=5) -> str:
     """
-    Функция генерирует имя заданной длины, чередуя гласные
-    и согласные буквы, начиная с гласной. Имя возвращается
-    с заглавной буквы.
+    Генерирует имя заданной длины, чередуя гласные и согласные.
+
+    Начинается с гласной. Первая буква — заглавная.
+
+    Parameters
+    ----------
+    length : int, optional
+        Длина имени (по умолчанию 5).
+
+    Returns
+    -------
+    str
+        Сгенерированное имя.
     """
     return "".join(
         random.choice(vowel if i % 2 == 0 else consonant) for i in range(length)
@@ -246,9 +315,19 @@ def generate_alternating_name(length=5) -> str:
 
 def generate_fake_name(length=3) -> str:
     """
-    Функция генерирует "фейковое" имя, состоящее из заданного
-    количества слогов, где каждый слог состоит из согласной
-    и гласной. Имя возвращается с заглавной буквы.
+    Генерирует «фейковое» имя из заданного числа слогов.
+
+    Каждый слог — согласная + гласная. Первая буква — заглавная.
+
+    Parameters
+    ----------
+    length : int, optional
+        Количество слогов (по умолчанию 3).
+
+    Returns
+    -------
+    str
+        Сгенерированное имя.
     """
     return "".join(
         f"{random.choice(consonant)}{random.choice(vowel)}" for _ in range(length)
@@ -257,7 +336,21 @@ def generate_fake_name(length=3) -> str:
 
 def hamming_distance(string_1, string_2):
     """
-    Расстояние Хэмминга
+    Вычисляет расстояние Хэмминга между двумя строками.
+
+    Сравниваются символы на одинаковых позициях до длины меньшей строки.
+
+    Parameters
+    ----------
+    string_1 : str
+        Первая строка.
+    string_2 : str
+        Вторая строка.
+
+    Returns
+    -------
+    int
+        Число различающихся позиций.
     """
     distance = 0
     for i in range(min(len(string_1), len(string_2))):
@@ -269,37 +362,34 @@ def hamming_distance(string_1, string_2):
 
 def euclidean_distance(a: tuple, b: tuple) -> float:
     """
-    Calculates the Euclidean distance between two points given as tuples of two
-    numbers (e.g. (x, y)).
+    Вычисляет евклидово расстояние между двумя точками на плоскости.
 
     Parameters
     ----------
     a : tuple
-        The first point.
+        Первая точка (x, y).
     b : tuple
-        The second point.
+        Вторая точка (x, y).
 
     Returns
     -------
     float
-        The Euclidean distance between the two points.
+        Евклидово расстояние между точками.
     """
     return ((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5
 
 
 def generate_random_code_string():
     """
-    Generates a random string of alphanumeric characters.
+    Генерирует случайную строку из букв и цифр.
 
-    This function shuffles the string containing all upper and lower case
-    letters of the alphabet and all digits, and then joins them together into
-    a single string. The length of the string is equal to the number of all
-    possible alphanumeric characters.
+    Берётся набор ASCII-букв и цифр, перемешивается и склеивается
+    в одну строку.
 
     Returns
     -------
-    string
-        A random alphanumeric string.
+    str
+        Случайная буквенно-цифровая строка.
     """
     sad = list(string.ascii_letters + string.digits)
     random.shuffle(sad)
@@ -307,12 +397,43 @@ def generate_random_code_string():
 
 
 def clean_text(text):
+    """
+    Приводит текст к нижнему регистру и удаляет знаки препинания.
+
+    Parameters
+    ----------
+    text : str
+        Исходный текст.
+
+    Returns
+    -------
+    str
+        Очищенный текст.
+    """
     text = text.lower()
     text = re.sub(r"[^\w\s]", "", text)
     return text
 
 
 def generate_shingles(text, shingle_len=2):
+    """
+    Разбивает текст на шинглы (n-граммы) и считает их частоты.
+
+    Каждое слово режется на подстроки длины shingle_len, каждая
+    подстрока хэшируется через CRC32 и попадает в словарь частот.
+
+    Parameters
+    ----------
+    text : str
+        Исходный текст.
+    shingle_len : int, optional
+        Длина шингла (по умолчанию 2).
+
+    Returns
+    -------
+    defaultdict
+        Словарь {хэш_шингла: частота}.
+    """
     words = text.split()
     shingles = []
     for word in words:
@@ -334,11 +455,22 @@ def generate_shingles(text, shingle_len=2):
 
 def similarity(string_1: str, string_2: str) -> float:
     """
-    Coefficient of similarity between two strings, calculated as a ratio of common words to total number of words.
+    Коэффициент схожести двух строк.
 
-    :param string_1: first string
-    :param string_2: second string
-    :return: coefficient of similarity (0 - 1)
+    Считается как отношение количества общих слов к общему числу слов
+    (без знаков препинания, слова длиной > 2).
+
+    Parameters
+    ----------
+    string_1 : str
+        Первая строка.
+    string_2 : str
+        Вторая строка.
+
+    Returns
+    -------
+    float
+        Коэффициент схожести от 0 до 1.
     """
     t = str.maketrans("", "", string.punctuation)
     list_1 = {word.lower() for word in string_1.translate(t).split() if len(word) > 2}
@@ -353,7 +485,22 @@ def similarity(string_1: str, string_2: str) -> float:
 
 def calculate_jaccard_similarity(str1, str2):
     """
-    Вычисляет коэффициент Жаккара
+    Вычисляет коэффициент Жаккара для двух строк.
+
+    Строки очищаются от пунктуации и приводятся к нижнему регистру,
+    затем сравниваются множества слов длиной > 2.
+
+    Parameters
+    ----------
+    str1 : str
+        Первая строка.
+    str2 : str
+        Вторая строка.
+
+    Returns
+    -------
+    float
+        Коэффициент Жаккара от 0 до 1.
     """
     str1 = str1.translate(str.maketrans("", "", string.punctuation)).lower()
     str2 = str2.translate(str.maketrans("", "", string.punctuation)).lower()
@@ -369,7 +516,22 @@ def calculate_jaccard_similarity(str1, str2):
 
 def weighted_jaccard(shingles1, shingles2):
     """
-    Вычисляет коэффициент Жаккара
+    Вычисляет взвешенный коэффициент Жаккара для словарей шинглов.
+
+    Для каждого ключа берётся min и max из двух частот, затем
+    суммируются по всем ключам.
+
+    Parameters
+    ----------
+    shingles1 : dict
+        Первый словарь {шингл: вес}.
+    shingles2 : dict
+        Второй словарь {шингл: вес}.
+
+    Returns
+    -------
+    float
+        Взвешенный коэффициент Жаккара.
     """
     keys = set(shingles1.keys()).union(shingles2.keys())
     min_sum = 0.0
@@ -384,15 +546,68 @@ def weighted_jaccard(shingles1, shingles2):
     return min_sum / max_sum
 
 
+def calculate_entropy(data: bytes):
+    """
+    Вычисляет энтропию Шеннона для последовательности байт.
+
+    Parameters
+    ----------
+    data : bytes
+        Входные данные.
+
+    Returns
+    -------
+    float
+        Энтропия в битах. Для пустых данных возвращает 0.0.
+    """
+    if not data:
+        return 0.0
+
+    counts = Counter(data)
+    size = len(data)
+    return -sum((count / size) * log2(count / size) for count in counts.values())
+
+
+def xor_data(data: bytes, key: bytes) -> bytes:
+    """
+    Применяет XOR-шифрование к данным с заданным ключом.
+
+    Ключ циклически повторяется по всей длине данных.
+
+    Parameters
+    ----------
+    data : bytes
+        Входные данные.
+    key : bytes
+        Ключ шифрования.
+
+    Returns
+    -------
+    bytes
+        Результат побайтового XOR.
+    """
+    return bytes(value ^ key[i % len(key)] for i, value in enumerate(data))
+
+
 # MD5
 
 
 def calculate_md5(file_path: str) -> str:
     """
-    This function calculates the MD5 hash of the given file.
-    It reads the file in 4KB chunks and updates the MD5 hash
-    with each chunk. This way it can handle large files without
-    loading the whole file into memory.
+    Вычисляет MD5-хеш файла.
+
+    Файл читается частями по 4 КБ, что позволяет обрабатывать
+    большие файлы без загрузки в память.
+
+    Parameters
+    ----------
+    file_path : str
+        Путь к файлу.
+
+    Returns
+    -------
+    str
+        Hex-строка MD5-хеша.
     """
     hash_md5 = hashlib.md5()
     with open(file_path, "rb") as f:
@@ -402,6 +617,19 @@ def calculate_md5(file_path: str) -> str:
 
 
 def str_to_md5(input_string):
+    """
+    Возвращает MD5-хеш UTF-8 строки.
+
+    Parameters
+    ----------
+    input_string : str
+        Входная строка.
+
+    Returns
+    -------
+    str
+        Hex-строка MD5-хеша.
+    """
     hash_md5 = hashlib.md5(input_string.encode("utf-8"))
     return hash_md5.hexdigest()
 
@@ -415,6 +643,16 @@ def calculate_sha256(file_path: str) -> str:
 
     Файл читается частями по 4 КБ, поэтому целиком в память
     не загружается — подходит и для больших файлов.
+
+    Parameters
+    ----------
+    file_path : str
+        Путь к файлу.
+
+    Returns
+    -------
+    str
+        Hex-строка SHA-256-хеша.
     """
     hash_sha256 = hashlib.sha256()
 
@@ -426,7 +664,19 @@ def calculate_sha256(file_path: str) -> str:
 
 
 def str_to_sha256(input_string: str) -> str:
-    """Возвращает SHA-256-хеш UTF-8 строки."""
+    """
+    Возвращает SHA-256-хеш UTF-8 строки.
+
+    Parameters
+    ----------
+    input_string : str
+        Входная строка.
+
+    Returns
+    -------
+    str
+        Hex-строка SHA-256-хеша.
+    """
     hash_sha256 = hashlib.sha256(input_string.encode("utf-8"))
     return hash_sha256.hexdigest()
 
@@ -436,21 +686,26 @@ def str_to_sha256(input_string: str) -> str:
 
 def logging_to_csv(name, msg1, msg2, folder_name="log") -> None:
     """
-    Logs messages to a CSV file with a timestamp.
+    Записывает сообщения в CSV-файл с меткой времени.
 
-    This function appends a new line to a CSV file in the specified folder,
-    containing the current timestamp and the provided messages.
+    В указанной папке (создаётся при необходимости) открывается
+    файл name.csv в режиме добавления и туда пишется новая строка
+    с текущим временем и двумя сообщениями.
 
     Parameters
     ----------
     name : str
-        The base name of the CSV file (without extension).
+        Имя CSV-файла (без расширения).
     msg1 : str
-        The first message to log.
+        Первое сообщение.
     msg2 : str
-        The second message to log.
+        Второе сообщение.
     folder_name : str, optional
-        The name of the folder where the CSV file is stored (default is "log").
+        Папка для хранения CSV (по умолчанию "log").
+
+    Returns
+    -------
+    None
     """
     if not os.path.exists(folder_name):
         os.mkdir(folder_name)
@@ -466,10 +721,17 @@ def logging_to_csv(name, msg1, msg2, folder_name="log") -> None:
 
 def collect_files_lst(start_path: str) -> list:
     """
-    Collects a list of full paths to all files in the given directory and its subdirectories.
+    Собирает полные пути ко всем файлам в каталоге и подкаталогах.
 
-    :param start_path: the directory to start searching from
-    :return: a list of full paths to all files found
+    Parameters
+    ----------
+    start_path : str
+        Каталог, с которого начинается поиск.
+
+    Returns
+    -------
+    list
+        Список полных путей к найденным файлам.
     """
     file_path_lst = list()
     for root, _, files in os.walk(start_path):
@@ -481,18 +743,27 @@ def collect_files_lst(start_path: str) -> list:
 
 def moves_file(file_path: str, dst: str, category: str, folder_lst=list()) -> str:
     """
-    Moves a file to a specified destination directory with a given category name.
+    Перемещает файл в каталог назначения с заданной категорией.
 
-    The given category name will be used as the last folder in the destination path.
-    If the given category name already exists in the destination directory, the file
-    will be moved to a subfolder of the category with the same name, but with a number
-    appended to the end (starting from 1).
+    Категория используется как последняя папка в пути назначения.
+    Если файл с таким именем уже существует, к имени добавляется
+    цифра «1» (до уникальности).
 
-    :param file_path: the full path to the file to move
-    :param dst: the destination directory
-    :param category: the category name to use for the last folder in the destination path
-    :param folder_lst: a list of folder names to use before the category name
-    :return: the full path to the moved file
+    Parameters
+    ----------
+    file_path : str
+        Полный путь к перемещаемому файлу.
+    dst : str
+        Каталог назначения.
+    category : str
+        Имя категории (последняя папка).
+    folder_lst : list, optional
+        Промежуточные папки перед категорией.
+
+    Returns
+    -------
+    str
+        Полный путь к перемещённому файлу.
     """
     path = os.path.join(dst, *folder_lst, category)
     if not os.path.exists(path):
@@ -508,18 +779,20 @@ def moves_file(file_path: str, dst: str, category: str, folder_lst=list()) -> st
 
 def find_duplicate_files(folder: str) -> list:
     """
-    Finds duplicate files in the given folder.
+    Находит дубликаты файлов в каталоге.
 
-    This function walks through the given folder and its subfolders, and
-    calculates the MD5 hash of each file. It then checks if a file with the
-    same hash already exists in the dictionary. If it does, it adds the file
-    path to the list of duplicates. If not, it adds the file path to the
-    dictionary with the hash as the key. Finally, it returns the list of
-    duplicates.
+    Обходит каталог и подкаталоги, считает MD5 каждого файла и
+    сравнивает с уже встреченными.
 
-    :param folder: the folder to search for duplicates in
-    :return: a list of tuples, where each tuple contains two file paths that
-             are duplicates of each other
+    Parameters
+    ----------
+    folder : str
+        Каталог для поиска.
+
+    Returns
+    -------
+    list
+        Список кортежей (путь_дубликата, путь_оригинала).
     """
     files_dict = {}
     duplicates = []
@@ -536,9 +809,16 @@ def find_duplicate_files(folder: str) -> list:
 
 def delete_files(filelist: list) -> None:
     """
-    Deletes all files in the given list.
+    Удаляет все файлы из списка.
 
-    :param filelist: a list of file paths to delete
+    Parameters
+    ----------
+    filelist : list
+        Список путей к файлам.
+
+    Returns
+    -------
+    None
     """
     for filename in filelist:
         os.remove(filename)
@@ -546,10 +826,16 @@ def delete_files(filelist: list) -> None:
 
 def remove_empty_directories(root_folder: str) -> None:
     """
-    Recursively removes empty directories from the given root folder.
+    Рекурсивно удаляет пустые каталоги.
 
-    :param root_folder: path to the root folder to start from
-    :return: None
+    Parameters
+    ----------
+    root_folder : str
+        Корневой каталог для очистки.
+
+    Returns
+    -------
+    None
     """
     for folder_name in os.listdir(root_folder):
         folder_path = os.path.join(root_folder, folder_name)
@@ -563,19 +849,23 @@ def remove_empty_directories(root_folder: str) -> None:
 
 def move_file_to_folder_with_limit(file_source, folder_name, max_files_per_folder=100):
     """
-    Moves the given file to a folder with the given name.
+    Перемещает файл в папку с ограничением на число файлов.
 
-    The folder will be created if it does not exist.
-    The file will be moved to a subfolder of the given folder, with a name that is
-    the next number in sequence (starting from 0). The subfolder will be created
-    if it does not exist.
-    If the number of files in the current subfolder is less than max_files_per_folder,
-    the file will be moved to that subfolder. Otherwise, a new subfolder will be created.
+    Файл кладётся в подпапку с числовым именем. Если в текущей
+    подпапке уже max_files_per_folder файлов, создаётся следующая.
 
-    :param file_source: the path to the file to move
-    :param folder_name: the name of the folder to move the file to
-    :param max_files_per_folder: the maximum number of files to store in each subfolder
-    :return: None
+    Parameters
+    ----------
+    file_source : str
+        Путь к перемещаемому файлу.
+    folder_name : str
+        Имя папки-контейнера.
+    max_files_per_folder : int, optional
+        Максимум файлов в подпапке (по умолчанию 100).
+
+    Returns
+    -------
+    None
     """
     os.makedirs(folder_name, exist_ok=True)
     maxfolder = 0
@@ -597,12 +887,24 @@ def move_file_to_folder_with_limit(file_source, folder_name, max_files_per_folde
 
 def upload_file(folder_name, uploaded_file, ext_lst=None):
     """
-    Функция загружает файл в указанную папку,
-    проверяет его расширение
-    и создает уникальное имя для сохранения.
-    Если папка не существует, она создается.
-    Файл сохраняется в структуре папок на основе первых двух
-    символов уникального имени файла.
+    Сохраняет загруженный файл в каталоге с уникальным именем.
+
+    Проверяет расширение, генерирует UUID-имя, создаёт подкаталоги
+    по первым двум и следующим двум символам имени.
+
+    Parameters
+    ----------
+    folder_name : str
+        Корневая папка для сохранения.
+    uploaded_file : file-like
+        Объект с методами .read() и атрибутом .filename.
+    ext_lst : list, optional
+        Список разрешённых расширений. По умолчанию — изображения.
+
+    Returns
+    -------
+    str or None
+        Путь к сохранённому файлу или None, если расширение не разрешено.
     """
     if not ext_lst:
         ext_lst = ["jpg", "png", "gif", "jpeg", "webp"]
@@ -623,10 +925,21 @@ def upload_file(folder_name, uploaded_file, ext_lst=None):
 
 def load_json(folder_name_lst, file_name, default={}):
     """
-    Функция загружает данные из JSON-файла. Если указанный каталог
-    не существует, она создает его. Если файл не существует,
-    функция создает пустой JSON-файл. Затем она загружает
-    и возвращает содержимое файла в виде словаря.
+    Загружает данные из JSON-файла, создавая каталог и файл при необходимости.
+
+    Parameters
+    ----------
+    folder_name_lst : str or list
+        Имя каталога (строка) или список его частей.
+    file_name : str
+        Имя JSON-файла.
+    default : dict, optional
+        Значение по умолчанию, если файл отсутствует.
+
+    Returns
+    -------
+    dict
+        Загруженный словарь.
     """
     if isinstance(folder_name_lst, str):
         folder_name = folder_name_lst
@@ -645,9 +958,20 @@ def load_json(folder_name_lst, file_name, default={}):
 
 def save_json(folder_name_lst, file_name, save_dct):
     """
-    Функция сохраняет словарь в формате JSON в указанный файл.
-    Если указанный каталог не существует, она создает его.
-    Затем она записывает переданный словарь в файл с заданным именем.
+    Сохраняет словарь в JSON-файл, создавая каталог при необходимости.
+
+    Parameters
+    ----------
+    folder_name_lst : str or list
+        Имя каталога (строка) или список его частей.
+    file_name : str
+        Имя JSON-файла.
+    save_dct : dict
+        Сохраняемый словарь.
+
+    Returns
+    -------
+    None
     """
     if isinstance(folder_name_lst, str):
         folder_name = folder_name_lst
